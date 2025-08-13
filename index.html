@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>শুভ জন্মাষ্টমী</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    
+    <style>
+        /* === ডিজাইন অপরিবর্তিত === */
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif;
+            color: #f0f0f0; min-height: 100vh;
+            box-sizing: border-box; overflow-x: hidden;
+            background: #000;
+        }
+
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .stars { background: #000 url(https://www.transparenttextures.com/patterns/stardust.png) repeat top center; }
+
+        .page-wrapper {
+            display: flex; justify-content: center; align-items: center;
+            width: 100%; min-height: 100vh; padding: 30px 20px; box-sizing: border-box;
+        }
+
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex;
+            justify-content: center; align-items: center; z-index: 1000; flex-direction: column; gap: 20px;
+        }
+        #preloader .loader-text { color: #FFD700; font-size: 1.5em; }
+        .spinner { width: 50px; height: 50px; border: 5px solid rgba(255, 215, 0, 0.3); border-top-color: #FFD700; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #fireworks-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+        
+        .container {
+            background: rgba(10, 20, 35, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            padding: 25px; border-radius: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3);
+            text-align: center; max-width: 420px; width: 100%;
+            box-sizing: border-box; z-index: 2; position: relative; display: none;
+        }
+        
+        .main-gif { max-width: 100%; border-radius: 12px; margin-bottom: 25px; border: 3px solid #FFC107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.5); }
+        #countdown-container { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .timer-box { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,193,7,0.4); width: 70px; }
+        .timer-box span { font-size: 2em; font-weight: 700; color: #FFD700; text-shadow: 0 0 10px #FFD700; }
+        .timer-box .label { font-size: 0.8em; color: #ccc; }
+        #countdown-end-message { display: none; color: #FFD700; font-size: 1.8em; font-weight: 700; text-shadow: 0 0 15px #FFD700; margin-bottom: 25px; }
+        .secondary-image { max-width: 90%; display: block; margin: 30px auto; border-radius: 12px; border: 2px solid rgba(255, 193, 7, 0.7); box-shadow: 0 0 15px rgba(255, 193, 7, 0.4); }
+        h1 { font-size: 2.5em; line-height: 1.3; font-weight: 700; margin: 0 0 20px 0; background: linear-gradient(145deg, #FFF8C9, #FFD700, #F7B500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(255, 180, 0, 0.5); }
+        .krishna-text { font-size: 1.05em; line-height: 1.8; color: #e0e0e0; margin-bottom: 30px; }
+        input[type="text"] { width: 100%; padding: 14px; border-radius: 50px; border: 2px solid rgba(255, 193, 7, 0.6); background: transparent; color: #fff; font-size: 1.1em; box-sizing: border-box; text-align: center; margin-bottom: 20px; transition: all 0.3s ease; }
+        input[type="text"]:focus { outline: none; border-color: #FFD700; box-shadow: 0 0 15px rgba(255, 193, 7, 0.5); }
+        button, a.btn {
+            padding: 14px 25px; border: none; border-radius: 50px;
+            font-size: 1.2em; font-weight: 700; cursor: pointer;
+            width: 100%; box-sizing: border-box; transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        #generate-btn { background: radial-gradient(ellipse at center, #FFC107 0%, #F57F17 100%); color: #000; }
+        #result { display: flex; flex-direction: column; gap: 15px; }
+        #result p { color: #FFC107; font-size: 1.1em; font-weight: 700; margin-bottom: 0; }
+        .link-area { display: flex; gap: 10px; }
+        #generated-link { margin-bottom: 0; }
+        #copy-btn { background: radial-gradient(ellipse at center, #FFC107 0%, #F57F17 100%); color: #000; width: auto; flex-shrink: 0; }
+        
+        #whatsapp-share-btn {
+            background-color: #25D366; color: #fff;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
+            white-space: nowrap;
+            /* === বাটন ছোট করার জন্য পরিবর্তন === */
+            padding: 12px 20px;
+            font-size: 1.1em;
+        }
+
+        #create-another-btn { margin-top: 0; background: #333; color: #fff; }
+        #music-toggle { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: #FFC107; color: #000; border-radius: 50%; border: none; font-size: 1.2em; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 101; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; -webkit-tap-highlight-color: transparent; }
+        #music-toggle.visible { opacity: 1; pointer-events: auto; }
+        
+        .stream-feather {
+            display: block; position: fixed; width: 60px; height: auto; z-index: 3;
+            opacity: 0.6; pointer-events: none;
+        }
+        .stream-feather.left { left: 5px; animation: move-down 10s linear infinite; }
+        .stream-feather.right { right: 5px; transform: scaleX(-1); animation: move-up 10s linear infinite; }
+        @keyframes move-down { from { top: -20%; } to { top: 100%; } }
+        @keyframes move-up { from { top: 100%; } to { top: -20%; } }
+
+        @media (min-width: 992px) {
+            h1 { font-size: 3em; }
+            .stream-feather { width: 80px; }
+            .stream-feather.left { left: 5%; }
+            .stream-feather.right { right: 5%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"><div class="stars"></div></div>
+    <div id="preloader"><div class="spinner"></div><div class="loader-text">লোড হচ্ছে...</div></div>
+    <canvas id="fireworks-canvas"></canvas>
+    <div id="side-feather-stream-container"></div>
+    <audio id="bg-music" loop><source src="janmastami.MP3" type="audio/mpeg"></audio>
+    <button id="music-toggle"><i class="fas fa-volume-up"></i></button>
+    
+    <div class="page-wrapper">
+        <div class="container">
+            <img src="janmastami.gif" alt="শুভ জন্মাষ্টমী" class="main-gif">
+            <div id="countdown-container">
+                <div class="timer-box"><span id="days">00</span><div class="label">দিন</div></div>
+                <div class="timer-box"><span id="hours">00</span><div class="label">ঘন্টা</div></div>
+                <div class="timer-box"><span id="minutes">00</span><div class="label">মিনিট</div></div>
+                <div class="timer-box"><span id="seconds">00</span><div class="label">সেকেন্ড</div></div>
+            </div>
+            <div id="countdown-end-message">শুভ জন্মাষ্টমী!</div>
+            <img src="janmastami 1.png" alt="Janmashtami Art" class="secondary-image">
+            <h1>শুভ <br> জন্মাষ্টমী</h1>
+            <p class="krishna-text">
+                ভগবান শ্রীকৃষ্ণ আবির্ভূত হয়েছিলেন অধর্মের বিনাশ করে ধর্মকে পুনঃস্থাপন করতে। তাঁর লীলা, জ্ঞান ও প্রেম যুগ যুগ ধরে মানব সমাজকে আলোর পথ দেখিয়ে চলেছে। এই পবিত্র তিথিতে আসুন আমরা তাঁর দেখানো পথে চলে জীবনকে সুন্দর ও মঙ্গলময় করে তুলি।
+            </p>
+            <div id="create-wish">
+                <input type="text" id="name" placeholder="এখানে আপনার নাম লিখুন" required>
+                <button id="generate-btn">লিঙ্ক তৈরি করুন</button>
+            </div>
+            <div id="result" style="display: none;">
+                <p>আপনার বিশেষ শুভেচ্ছা লিঙ্ক তৈরি হয়েছে। এখন শেয়ার করুন।</p>
+                <div class="link-area"><input type="text" id="generated-link" readonly><button id="copy-btn" class="btn"><i class="fas fa-copy"></i></button></div>
+                <a id="whatsapp-share-btn" href="#" class="btn" target="_blank"><i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপে শেয়ার করুন</a>
+                <button id="create-another-btn" class="btn">অন্য নামে শুভেচ্ছা পাঠান</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/dist/index.umd.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // জাভাস্ক্রিপ্ট অংশ অপরিবর্তিত
+            const countdownDate = new Date("August 16, 2025 00:00:00").getTime();
+            const timerInterval = setInterval(function() {
+                const now = new Date().getTime(); const distance = countdownDate - now;
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('countdown-container').style.display = 'none';
+                    document.getElementById('countdown-end-message').style.display = 'block';
+                    return;
+                }
+                document.getElementById('days').innerText = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById('hours').innerText = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
+            }, 1000);
+
+            const fireworks = new Fireworks.default(document.getElementById('fireworks-canvas'), { hue: { min: 30, max: 50 } });
+            fireworks.start();
+
+            const sideFeatherContainer = document.getElementById('side-feather-stream-container');
+            const featherCount = 3;
+            for (let i = 0; i < featherCount; i++) {
+                const leftFeather = document.createElement('img'); leftFeather.src = 'Peacock.png'; leftFeather.className = 'stream-feather left'; leftFeather.style.animationDelay = `${i * 3.3}s`;
+                sideFeatherContainer.appendChild(leftFeather);
+                const rightFeather = document.createElement('img'); rightFeather.src = 'Peacock.png'; rightFeather.className = 'stream-feather right'; rightFeather.style.animationDelay = `${i * 3.3}s`;
+                sideFeatherContainer.appendChild(rightFeather);
+            }
+            
+            const bgMusic = document.getElementById('bg-music');
+            const musicToggle = document.getElementById('music-toggle');
+            const startMusic = () => { bgMusic.play().then(() => { musicToggle.innerHTML = '<i class="fas fa-volume-up"></i>'; }).catch(() => { musicToggle.innerHTML = '<i class="fas fa-volume-mute"></i>'; }); };
+            document.body.addEventListener('click', () => { musicToggle.classList.add('visible'); if (bgMusic.paused) startMusic(); }, { once: true });
+            musicToggle.addEventListener('click', () => { if (bgMusic.paused) { bgMusic.play(); musicToggle.innerHTML = '<i class="fas fa-volume-up"></i>'; } else { bgMusic.pause(); musicToggle.innerHTML = '<i class="fas fa-volume-mute"></i>'; } });
+            const preloader = document.getElementById('preloader');
+            const container = document.querySelector('.container');
+            window.onload = () => { preloader.style.display = 'none'; container.style.display = 'block'; startMusic(); };
+            
+            const createWishDiv = document.getElementById('create-wish');
+            const resultDiv = document.getElementById('result');
+            const generateBtn = document.getElementById('generate-btn');
+            const nameInput = document.getElementById('name');
+            const whatsappShareBtn = document.getElementById('whatsapp-share-btn');
+            const generatedLinkInput = document.getElementById('generated-link');
+            const copyBtn = document.getElementById('copy-btn');
+            const createAnotherBtn = document.getElementById('create-another-btn');
+            
+            generateBtn.addEventListener('click', function() {
+                const name = nameInput.value.trim();
+                if (name === '') { alert('অনুগ্রহ করে আপনার নাম লিখুন।'); return; }
+                const baseUrl = window.location.href.split('?')[0];
+                const generatedUrl = `${baseUrl}?name=${encodeURIComponent(name)}`;
+                generatedLinkInput.value = generatedUrl;
+                const wishMessage = `*${name}* আপনাকে জন্মাষ্টমীর আন্তরিক শুভেচ্ছা ও অভিনন্দন জানিয়েছেন। ✨🦚\n\nআপনার জন্য পাঠানো বিশেষ শুভেচ্ছা বার্তাটি দেখতে নিচের লিঙ্কে ক্লিক করুন 👇\n\n${generatedUrl}`;
+                whatsappShareBtn.href = `whatsapp://send?text=${encodeURIComponent(wishMessage)}`;
+                createWishDiv.style.display = 'none'; resultDiv.style.display = 'flex';
+            });
+            
+            copyBtn.addEventListener('click', () => {
+                generatedLinkInput.select(); document.execCommand('copy');
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => { copyBtn.innerHTML = '<i class="fas fa-copy"></i>'; }, 2000);
+            });
+
+            createAnotherBtn.addEventListener('click', () => {
+                resultDiv.style.display = 'none';
+                createWishDiv.style.display = 'block';
+                nameInput.value = '';
+            });
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const senderName = urlParams.get('name');
+            if (senderName) {
+                const greetingFromDiv = document.createElement('div');
+                greetingFromDiv.innerHTML = `<h2 style="color: #FFC107; background-color: rgba(255,193,7,0.1); padding: 15px; border-radius: 10px; border: 1px dashed #FFC107; margin-bottom: 20px;"><span style="font-weight: bold; color: #fff;">${decodeURIComponent(senderName.replace(/\+/g, ' '))}</span> আপনাকে জন্মাষ্টমীর শুভেচ্ছা জানিয়েছেন!</h2>`;
+                container.insertBefore(greetingFromDiv, container.firstChild);
+            }
+        });
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+	atOptions = {
+		'key' : 'c85c2aabb58a4459772a28711f2979e1',
+		'format' : 'iframe',
+		'height' : 50,
+		'width' : 320,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/c85c2aabb58a4459772a28711f2979e1/invoke.js"></script>
